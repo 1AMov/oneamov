@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311617274959",
+    "project_id": "oneamov-app",
+    "storage_bucket": "oneamov-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311617274959:android:5e38b84a9ef36218b0163a",
+        "android_client_info": {
+          "package_name": "com.example.oneamov"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOKZZoBk2ilrwoYUcb-Ic43NQpf-b9zSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

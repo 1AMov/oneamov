@@ -15,10 +15,10 @@ class DrawerItem {
       required this.roles});
 }
 
-List<DrawerItem> drawerItems = [
-  DrawerItem(
-      id: 'feed',
-      title: 'Feed',
-      iconData: Icons.home_rounded,
-      roles: ['admin', 'user']),
-];
+// List<DrawerItem> drawerItems = [
+//   DrawerItem(
+//       id: 'feed',
+//       title: 'Feed',
+//       iconData: Icons.home_rounded,
+//       roles: ['admin', 'user']),
+// ];

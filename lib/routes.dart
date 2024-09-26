@@ -18,21 +18,28 @@ class CustomRoutes {
     ),
     GoRoute(
       path: "/:userID/:page",
-      builder: (context, state) => HomePage(
-        userID: state.pathParameters['userID']!,
-        currentPage: state.pathParameters['page']!,
-        secondID: "",
-        thirdPage: "",
-      ),
+      builder: (context, state) {
+        String? layout = state.uri.queryParameters['layout'];
+        return HomePage(
+          userID: state.pathParameters['userID']!,
+          currentPage: state.pathParameters['page']!,
+          secondID: "",
+          thirdPage: "",
+          query: {"layout": layout},
+        );
+      },
     ),
     GoRoute(
       path: "/:userID/:page/:secondID",
-      builder: (context, state) => HomePage(
-        userID: state.pathParameters['userID']!,
-        currentPage: state.pathParameters['page']!,
-        secondID: state.pathParameters['secondID']!,
-        thirdPage: "",
-      ),
+      builder: (context, state) {
+        return HomePage(
+          userID: state.pathParameters['userID']!,
+          currentPage: state.pathParameters['page']!,
+          secondID: state.pathParameters['secondID']!,
+          thirdPage: "",
+          query: {},
+        );
+      },
     ),
     GoRoute(
       path: "/:userID/:page/:secondID/:thirdPage",
@@ -41,6 +48,7 @@ class CustomRoutes {
         currentPage: state.pathParameters['page']!,
         secondID: state.pathParameters['secondID']!,
         thirdPage: state.pathParameters['thirdPage']!,
+        query: {},
       ),
     )
   ]);

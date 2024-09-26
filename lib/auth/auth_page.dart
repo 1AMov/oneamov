@@ -45,7 +45,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget authImage(Size size) {
     return Image.asset(
       Config.loginImage,
-      height: 200.0,
+      // height: 200.0,
       fit: BoxFit.contain,
     );
   }
@@ -87,52 +87,55 @@ class _AuthPageState extends State<AuthPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 50.0),
-                        if (isDesktop && widget.page != "signup") ...[
-                          CustomWrapper(
-                            maxWidth: 800.0,
-                            child: CustomContainer(
-                              containerInsidePadding: EdgeInsets.zero,
-                              color: const Color.fromRGBO(245, 245, 245, 1.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      constraints: const BoxConstraints(
-                                          minHeight: 480.0),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 15.0),
-                                      decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.horizontal(
-                                              left: Radius.circular(10.0))),
-                                      child: Center(child: buildForm()),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: authImage(size),
-                                  )
-                                ],
-                              ),
+                        // if (isDesktop && widget.page != "signup") ...[
+                        //   CustomWrapper(
+                        //     maxWidth: 800.0,
+                        //     child: CustomContainer(
+                        //       containerInsidePadding: EdgeInsets.zero,
+                        //       color: const Color.fromRGBO(245, 245, 245, 1.0),
+                        //       child: Row(
+                        //         children: [
+                        //           Expanded(
+                        //             flex: 1,
+                        //             child: Container(
+                        //               constraints: const BoxConstraints(
+                        //                   minHeight: 480.0),
+                        //               padding: const EdgeInsets.symmetric(
+                        //                   vertical: 10.0, horizontal: 15.0),
+                        //               decoration: const BoxDecoration(
+                        //                   color: Colors.white,
+                        //                   borderRadius: BorderRadius.horizontal(
+                        //                       left: Radius.circular(10.0))),
+                        //               child: Center(child: buildForm()),
+                        //             ),
+                        //           ),
+                        //           Expanded(
+                        //             flex: 1,
+                        //             child: authImage(size),
+                        //           )
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   )
+                        // ] else ...[
+                        CustomWrapper(
+                          maxWidth: 800.0,
+                          child: CustomContainer(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(height: 100.0, child: authImage(size)),
+                                const SizedBox(height: 10.0),
+                                CustomWrapper(
+                                  maxWidth: 400.0,
+                                  child: buildForm(),
+                                ),
+                              ],
                             ),
-                          )
-                        ] else ...[
-                          CustomWrapper(
-                            maxWidth: 600.0,
-                            child: CustomContainer(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                      height: 200.0, child: authImage(size)),
-                                  const SizedBox(height: 10.0),
-                                  buildForm(),
-                                ],
-                              ),
-                            ),
-                          )
-                        ]
+                          ),
+                        ),
+                        // ]
+                        const SizedBox(height: 50.0),
                       ],
                     ),
                   ),

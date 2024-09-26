@@ -12,7 +12,7 @@ class Config {
   static const String version = "1.0.0";
 
   static bool isDebugMode = false;
-  static const String devID = "1725197381572";
+  static const String devID = "xyjArjf2g8aezP1IkWPNz4DCxq72";
 
   static const String dateFormat = 'dd-MMM-yyyy';
 
@@ -20,6 +20,7 @@ class Config {
   static const Color themeColor = Colors.red;
   static const Color drawerColor = Colors.grey;
   static const Color scaffoldBackgroundColor = Colors.white;
+  static const Color splashBackgroundColor = Colors.black;
 
   // SCROLLBAR
   static const double scrollbarWidth = 12.0;

@@ -479,12 +479,14 @@ class _CityPickerState extends State<CityPicker> {
 }
 
 class CountryPicker extends StatefulWidget {
+  final String? title;
   final String? selectedCountry;
   final bool? enabled;
   final void Function(String?) onChanged;
   final String? Function(String?)? validator;
   const CountryPicker(
       {super.key,
+      this.title = "Country",
       this.selectedCountry,
       this.enabled = true,
       required this.onChanged,
@@ -503,7 +505,7 @@ class _CountryPickerState extends State<CountryPicker> {
 
     return ObjectPickerDropDown<String>(
       controller: countryCtrl,
-      title: "Country",
+      title: widget.title,
       selectedItem: widget.selectedCountry,
       enabled: widget.enabled,
       getItemsList: (filter) async {

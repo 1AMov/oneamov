@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
           GoRouter.of(context).go("/auth/login");
         } else {
           // Bypass login in dev mode
-          GoRouter.of(context).go("/${Config.devID}/home");
+          GoRouter.of(context).go("/${Config.devID}/home?layout=flow");
         }
       } else {
         // Do NOT display userID
@@ -104,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Provider.of<NavigationProvider>(context, listen: false)
                   .setCurrentPage("home");
 
-              GoRouter.of(context).go("/$userID/home");
+              GoRouter.of(context).go("/$userID/home?layout=flow");
             });
           } else {
             if (!Config.isDebugMode) {
@@ -113,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen> {
               GoRouter.of(context).go("/auth/login");
             } else {
               // Bypass login in dev mode
-              GoRouter.of(context).go("/${Config.devID}/home");
+              GoRouter.of(context).go("/${Config.devID}/home?layout=flow");
             }
           }
         }
@@ -126,6 +126,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
+      backgroundColor: Config.splashBackgroundColor,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -133,17 +134,21 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Hero(
-              tag: Config.logo,
+              tag: Config.logoWhite,
               child: Image.asset(
                 Config.logo,
-                width: 200.0,
+                width: 100.0,
                 fit: BoxFit.contain,
               ),
             ),
             const SizedBox(
               height: 20.0,
             ),
-            Text(Config.tagLine, style: Theme.of(context).textTheme.titleSmall!
+            Text(Config.tagLine,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(color: Colors.white)
                 // .copyWith(fontSize: 20.0),
                 )
           ],

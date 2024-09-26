@@ -172,7 +172,7 @@ class WhiteButton extends StatelessWidget {
 class BorderButton extends StatelessWidget {
   final String title;
   final EdgeInsetsGeometry? insidePadding;
-  final IconData iconData;
+  final IconData? iconData;
   final Color color;
   final bool isActive;
   final void Function() onPressed;
@@ -181,28 +181,42 @@ class BorderButton extends StatelessWidget {
       {super.key,
       required this.title,
       this.insidePadding,
-      required this.iconData,
+      this.iconData,
       required this.color,
       required this.isActive,
       required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Container(
       padding: insidePadding,
+      width: size.width,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5.0),
-          border: Border.all(color: isActive ? color : Colors.grey)),
-      child: TextButton.icon(
-          onPressed: isActive ? onPressed : () {},
-          label: Text(
-            title,
-            style: TextStyle(color: isActive ? color : Colors.grey),
-          ),
-          icon: Icon(
-            iconData,
-            color: isActive ? color : Colors.grey,
-          )),
+          border:
+              Border.all(color: isActive ? color : Colors.grey, width: 3.0)),
+      child: iconData != null
+          ? TextButton.icon(
+              onPressed: isActive ? onPressed : () {},
+              label: Text(
+                title,
+                style: TextStyle(
+                    color: isActive ? color : Colors.grey,
+                    fontWeight: FontWeight.w800),
+              ),
+              icon: Icon(
+                iconData,
+                color: isActive ? color : Colors.grey,
+              ))
+          : TextButton(
+              onPressed: isActive ? onPressed : () {},
+              child: Text(
+                title,
+                style: TextStyle(
+                    color: isActive ? color : Colors.grey,
+                    fontWeight: FontWeight.w800),
+              )),
     );
   }
 }

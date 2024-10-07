@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:oneamov/helpers/text_styles.dart';
 
 import '../common_functions/read_json_file.dart';
 import '../config.dart';
@@ -21,10 +22,13 @@ class CustomTextField extends StatefulWidget {
   final int? maxLines;
   final Widget? suffix;
   final Widget? suffixIcon;
+  final InputBorder? border;
+  final String? fontFamily;
   // final void Function()? onSuffixTap;
   final TextInputType textInputType;
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
+  final FontWeight? fontWeight;
 
   const CustomTextField({
     super.key,
@@ -40,9 +44,12 @@ class CustomTextField extends StatefulWidget {
     this.suffix,
     this.suffixIcon,
     required this.textInputType,
+    this.fontFamily,
+    this.border,
     // this.onSuffixTap,
     this.onChanged,
     this.validator,
+    this.fontWeight
   });
 
   @override
@@ -89,14 +96,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
               isDense: true,
               alignLabelWithHint: true,
               labelText: widget.labelText.isEmpty ? null : widget.labelText,
+              hintStyle: context.bodyLarge?.copyWith(fontFamily: widget.fontFamily, color: Config.drawerColor),
+              
               hintText: widget.hintText,
               prefixIcon:
                   widget.prefixIcon != null ? Icon(widget.prefixIcon!) : null,
               suffixIcon: widget.suffixIcon,
               // suffix: widget.suffix,
-              labelStyle: TextStyle(
-                  color: focusNode.hasFocus ? Config.themeColor : Colors.black),
-              border: const OutlineInputBorder(
+              labelStyle: focusNode.hasFocus?  TextStyle(
+                  color: Config.themeColor) : context.headlineMedium?.copyWith(fontFamily: widget.fontFamily, color: Config.drawerColor, fontSize: 25, fontWeight: widget.fontWeight),
+              border: widget.border ?? OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 borderSide: BorderSide(color: Colors.black, width: 0.5),
               ),

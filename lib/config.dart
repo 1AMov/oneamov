@@ -18,9 +18,12 @@ class Config {
 
   // COLORS
   static const Color themeColor = Colors.red;
+  static const Color primaryColor = Color(0xFFfe3300);
   static const Color drawerColor = Colors.grey;
   static const Color scaffoldBackgroundColor = Colors.white;
   static const Color splashBackgroundColor = Colors.black;
+  static const Color lightBlueColor = Color(0xFF6492be);
+  static const Color greenColor = Color(0xFF5d9855);
 
   // SCROLLBAR
   static const double scrollbarWidth = 12.0;
@@ -39,6 +42,28 @@ class Config {
   static const String loginImage = logo;
   static const String mailSentImage = "assets/images/mail_sent.png";
   static const String profileImage = "assets/images/profile.png";
+  static const String audio = "assets/images/postaudio.png";
+  static const String image = "assets/images/postimage.png";
+  static const String pdf = "assets/images/postpdf.png";
+  static const String video = "assets/images/postvideo.png";
+  static const String x = "assets/images/458595.png";
+  static const String plus = "assets/images/plus-152614_1280.png";
+  static const String country = "assets/images/country.png";
+  static const String loveBlack = "assets/images/love.png";
+  static const String loveWhite = "assets/images/love1.png";
+  static const String thumbgrey = "assets/images/441-441888.png";
+  static const String thumbWhite = "assets/images/441-441888a.png";
+  static const String eyeGrey = "assets/images/201934-200.png";
+  static const String addPhoto = "assets/images/add-po19-2569.png";
+  static const String buttonArrow = "assets/images/button-arrow-expand-1.png";
+  static const String commentBlack = "assets/images/comment.png";
+  static const String refresh = "assets/images/refresh.png";
+  static const String commentGrey = "assets/images/reps.png";
+  static const String shareGrey = "assets/images/share.png";
+  static const String userPlaceholder =
+      "assets/images/userimageplaceholder.png";
+  static const String setting = "assets/images/setting.png";
+  static const String remove = "assets/images/remove.png";
 
   // COLLECTION NAMES
   static const String users = "users";

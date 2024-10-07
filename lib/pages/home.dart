@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
       case 'home':
         return FeedPage(userID: widget.userID);
       case "new_post":
-        return NewPost();
+        return  NewPost();
       default:
         return Text("Error: Can't find page '${widget.currentPage}'");
     }

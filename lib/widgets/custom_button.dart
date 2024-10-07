@@ -10,13 +10,17 @@ class CustomButton extends StatelessWidget {
   final bool? isTight;
   final Color? color;
   final void Function() onPressed;
+  final void Function()? onLongPress;
+  final double? borderRadius;
   const CustomButton(
       {super.key,
       required this.title,
       required this.loading,
       this.isActive = true,
       this.isTight = false,
-      this.color = Config.themeColor,
+      this.color = Config.primaryColor,
+      this.onLongPress,
+      this.borderRadius,
       required this.onPressed});
 
   @override
@@ -30,13 +34,14 @@ class CustomButton extends StatelessWidget {
         width: isTight! ? null : size.width,
         child: ElevatedButton(
           onPressed: loading || !isActive! ? () {} : onPressed,
+          onLongPress: onLongPress,
           style: ElevatedButton.styleFrom(
             minimumSize: Size.zero,
             elevation: isActive! ? 0.0 : null,
             backgroundColor: loading || !isActive! ? Colors.grey : color,
             // shadowColor: Config.boxShadow.color,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0)),
+                borderRadius: BorderRadius.circular(borderRadius ?? 5.0)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -59,7 +64,7 @@ class CustomButton extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium!
-                      .copyWith(color: Colors.white),
+                      .copyWith(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15),
                 ),
               ]
             ],

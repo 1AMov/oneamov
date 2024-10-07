@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oneamov/pages/new_post.dart';
 import 'package:oneamov/widgets/adaptive_avatar.dart';
 import 'package:oneamov/widgets/custom_button.dart';
 import 'package:oneamov/widgets/notifications_count_fetcher.dart';
@@ -9,12 +10,17 @@ import 'package:responsive_builder/responsive_builder.dart';
 import '../config.dart';
 import '../models/account.dart';
 
-class CustomAppbar extends StatelessWidget {
+class CustomAppbar extends StatefulWidget {
   final String userID;
   final GlobalKey<ScaffoldState> scaffoldKey;
   const CustomAppbar(
       {super.key, required this.userID, required this.scaffoldKey});
 
+  @override
+  State<CustomAppbar> createState() => _CustomAppbarState();
+}
+
+class _CustomAppbarState extends State<CustomAppbar> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -35,7 +41,7 @@ class CustomAppbar extends StatelessWidget {
                 color: Colors.white,
                 boxShadow: [Config.boxShadow]),
             child: StreamBuilder<DocumentSnapshot>(
-                stream: Config.usersCollection.doc(userID).snapshots(),
+                stream: Config.usersCollection.doc(widget.userID).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const SizedBox();
@@ -57,7 +63,8 @@ class CustomAppbar extends StatelessWidget {
                             InkWell(
                                 onTap: () {
                                   if (isMobile) {
-                                    scaffoldKey.currentState!.openDrawer();
+                                    widget.scaffoldKey.currentState!
+                                        .openDrawer();
                                   }
                                 },
                                 child: AdaptiveAvatar(
@@ -97,7 +104,7 @@ class CustomAppbar extends StatelessWidget {
                                 ),
                                 IconButton(
                                     onPressed: () {},
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.search,
                                       color: Colors.grey,
                                     ))
@@ -165,7 +172,7 @@ class CustomAppbar extends StatelessWidget {
                                   isTight: true,
                                   onPressed: () {
                                     GoRouter.of(context)
-                                        .go("/$userID/new_post");
+                                        .go("/${widget.userID}/new_post");
                                   })
                             ],
                           ),

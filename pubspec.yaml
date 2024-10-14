@@ -63,6 +63,8 @@ dependencies:
   # syncfusion_flutter_calendar: ^24.2.9
   # syncfusion_flutter_maps: ^24.2.9
   syncfusion_flutter_datepicker: ^24.2.9
+  video_player: ^2.9.2
+  just_audio: ^0.9.41
 
 dev_dependencies:
   flutter_test:

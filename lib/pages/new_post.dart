@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:html' as html;
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +8,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:video_player/video_player.dart';
+
 import 'package:oneamov/common_functions/custom_file_picker.dart';
 import 'package:oneamov/common_functions/custom_toast.dart';
 import 'package:oneamov/config.dart';
@@ -18,7 +24,6 @@ import 'package:oneamov/pages/sector_choosing.dart';
 import 'package:oneamov/widgets/custom_button.dart';
 import 'package:oneamov/widgets/custom_text.dart';
 import 'package:oneamov/widgets/custom_textfield.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 
 class NewPost extends StatefulWidget {
   const NewPost({super.key});
@@ -47,6 +52,120 @@ class _NewPostState extends State<NewPost> {
   List<String> documentPaths = [];
   List<int> size = [];
   List<PlatformFile>? pickedImages;
+    VideoPlayerController? _videoPlayerController;
+  File? _videoFile;
+  Uint8List? _videoBytes;
+   String? _videoUrl;
+    AudioPlayer _audioPlayer = AudioPlayer();
+  File? _audioFile;
+  String? _audioUrl;
+  Uint8List? _audioBytes;
+   Duration _audioDuration = Duration.zero;
+  Duration _audioPosition = Duration.zero;
+  StreamSubscription<Duration>? _positionSubscription;
+   bool _isAudioSelected = false;
+
+
+    Future<void> _pickAudio() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.audio,
+      allowMultiple: false,
+      withData: kIsWeb,
+    );
+
+    if (result != null) {
+          setState(() {
+        _isAudioSelected = true; 
+      });
+      if (kIsWeb) {
+        setState(() {
+          _audioBytes = result.files.single.bytes;
+        });
+
+        // Create a blob URL for the web
+        final blob = html.Blob([_audioBytes!]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        setState(() {
+          _audioUrl = url;
+        });
+
+        // Set the audio player to play from the URL
+        await _audioPlayer.setUrl(_audioUrl!);
+      } else {
+        // Handle native platforms (mobile/desktop)
+        setState(() {
+          _audioFile = File(result.files.single.path!);
+        });
+
+        // Set the audio player to play from the file
+        await _audioPlayer.setFilePath(_audioFile!.path);
+      }
+
+      // Listen to audio duration and position changes
+      _audioPlayer.durationStream.listen((duration) {
+        setState(() {
+          _audioDuration = duration ?? Duration.zero;
+        });
+      });
+
+      _positionSubscription = _audioPlayer.positionStream.listen((position) {
+        setState(() {
+          _audioPosition = position;
+        });
+      });
+    }
+  }
+
+    Widget buildProgressBar() {
+    return Slider(
+      value: _audioPosition.inSeconds.toDouble(),
+      max: _audioDuration.inSeconds.toDouble(),
+      onChanged: (value) async {
+        await _audioPlayer.seek(Duration(seconds: value.toInt()));
+      },
+    );
+  }
+
+  // Method to pick video using FilePicker
+   Future<void> _pickVideo() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.video, // Specify the file type as video
+      allowMultiple: false,
+      withData: kIsWeb, // On the web, you will need the video as bytes
+    );
+
+    if (result != null) {
+      if (kIsWeb) {
+        // Handle video for web by creating a blob URL
+        setState(() {
+          _videoBytes = result.files.single.bytes;
+        });
+
+        final blob = html.Blob([_videoBytes]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        setState(() {
+          _videoUrl = url;
+        });
+
+        _videoPlayerController = VideoPlayerController.network(_videoUrl!)
+          ..initialize().then((_) {
+            setState(() {});
+            _videoPlayerController!.play();
+          });
+      } else {
+        // If not on web, use the file path
+        setState(() {
+          _videoFile = File(result.files.single.path!);
+        });
+
+        _videoPlayerController = VideoPlayerController.file(_videoFile!)
+          ..initialize().then((_) {
+            setState(() {});
+            _videoPlayerController!.play();
+          });
+      }
+    }
+  }
 
   Future<List<dynamic>> selectImages() async {
     List<PlatformFile> selectedImages =
@@ -210,9 +329,9 @@ class _NewPostState extends State<NewPost> {
   void initState() {
     attachFiles = [
       AttachFiles(name: "Images", image: Config.image, onPressed: selectImage),
-      AttachFiles(name: "Videos", image: Config.video, onPressed: () {}),
+      AttachFiles(name: "Videos", image: Config.video, onPressed: _pickVideo),
       AttachFiles(name: "PDF", image: Config.pdf, onPressed: selectDocuments),
-      AttachFiles(name: "Audio", image: Config.audio, onPressed: () {})
+      AttachFiles(name: "Audio", image: Config.audio, onPressed: _pickAudio)
     ];
     super.initState();
   }
@@ -224,6 +343,15 @@ class _NewPostState extends State<NewPost> {
     footerController.dispose();
     linkTextController.dispose();
     linkController.dispose();
+    _videoPlayerController?.dispose();
+    _positionSubscription?.cancel();
+       if (kIsWeb && _videoUrl != null) {
+      html.Url.revokeObjectUrl(_videoUrl!); 
+    }
+       _audioPlayer.dispose();
+    if (kIsWeb && _audioUrl != null) {
+      html.Url.revokeObjectUrl(_audioUrl!); // Clean up blob URL for web
+    }
     super.dispose();
   }
 
@@ -239,16 +367,16 @@ class _NewPostState extends State<NewPost> {
                 content: SizedBox(
                   width: size.width * 0.5,
                   child: SingleChildScrollView(
-                    child: buildPost(),
+                    child: buildPost(isMobile),
                   ),
                 ),
               )
-            : buildPost();
+            : buildPost(isMobile);
       },
     );
   }
 
-  Widget buildPost() {
+  Widget buildPost(bool isMobile) {
     final size = MediaQuery.of(context).size;
     return Container(
         margin: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -267,14 +395,11 @@ class _NewPostState extends State<NewPost> {
                       textInputType: TextInputType.text,
                       border: UnderlineInputBorder(),
                       fontWeight: FontWeight.bold,
-                      fontFamily: "Seguisb",
+                      fontSize: isMobile ? null : 12,
+                      maxLength: 220,
+                     
                     ),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "220",
-                          style: context.bodySmall,
-                        )),
+                  
                     SizedBox(
                       height: 12,
                     ),
@@ -320,7 +445,7 @@ class _NewPostState extends State<NewPost> {
                 style: context.titleLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: Config.drawerColor,
-                    fontSize: 25),
+                    fontSize: isMobile ? 25 : 17,),
               ),
               SizedBox(
                 height: 30,
@@ -362,16 +487,67 @@ class _NewPostState extends State<NewPost> {
                   ),
                 ],
               ),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "1000",
-                    style: context.bodySmall,
-                  )),
+              // Align(
+              //     alignment: Alignment.centerRight,
+              //     child: Text(
+              //       "1000",
+              //       style: context.bodySmall,
+              //     )),
               if (pickedImages != null)
                 Visibility(
                     visible: pickedImages != null,
                     child: Image.memory(pickedImages!.first.bytes!)),
+                  if (_videoPlayerController != null &&
+              _videoPlayerController!.value.isInitialized)
+            AspectRatio(
+              aspectRatio: _videoPlayerController!.value.aspectRatio,
+              child: Stack(children: [VideoPlayer(_videoPlayerController!),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: IconButton(onPressed: (){ setState(() {
+                  if (_videoPlayerController!.value.isPlaying) {
+                    _videoPlayerController!.pause();
+                  } else {
+                    _videoPlayerController!.play();
+                  }
+                });}, icon: _videoPlayerController!.value.isPlaying ? Icon(Icons.play_circle) : Icon(Icons.pause_circle)))]),
+            ),
+        if (_isAudioSelected)
+           Column(
+                children: [
+                  buildProgressBar(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.play_arrow),
+                        onPressed: () {
+                          _audioPlayer.play();
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.pause),
+                        onPressed: () {
+                          _audioPlayer.pause();
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.stop),
+                        onPressed: () {
+                          _audioPlayer.stop();
+                        },
+                      ),
+                    ],
+                  ),
+                  Text(
+                    "${_audioPosition.inMinutes}:${(_audioPosition.inSeconds % 60).toString().padLeft(2, '0')}"
+                    " / ${_audioDuration.inMinutes}:${(_audioDuration.inSeconds % 60).toString().padLeft(2, '0')}",
+                  ),
+                ],
+              ),
               CustomTextField(
                 controller: bodyController,
                 labelText: showLinkFields ? "Footer" : "Acknowledgements etc..",
@@ -379,14 +555,11 @@ class _NewPostState extends State<NewPost> {
                 textInputType: TextInputType.text,
                 maxLines: 2,
                 border: UnderlineInputBorder(),
-                fontFamily: "seguisbi",
+                fontSize: isMobile ? null : 12,
+                maxLength: 100,
+                
               ),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "100",
-                    style: context.bodySmall,
-                  )),
+           
               if (showLinkFields)
                 Column(
                   children: [
@@ -396,7 +569,7 @@ class _NewPostState extends State<NewPost> {
                     //   hintText: "Footer",
                     //   textInputType: TextInputType.text,
                     //   border: UnderlineInputBorder(),
-                    //   fontFamily: "seguisbi",
+                    
                     // ),
                     // Align(
                     //     alignment: Alignment.centerRight,
@@ -410,28 +583,20 @@ class _NewPostState extends State<NewPost> {
                       hintText: "External Link Text",
                       textInputType: TextInputType.text,
                       border: UnderlineInputBorder(),
-                      fontFamily: "seguisbi",
+                      fontSize: isMobile ? null : 12,
+                      maxLength: 45,
                     ),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "45",
-                          style: context.bodySmall,
-                        )),
+                 
                     CustomTextField(
                       controller: linkController,
                       labelText: "External URL",
                       hintText: "External URL",
                       textInputType: TextInputType.url,
                       border: UnderlineInputBorder(),
-                      fontFamily: "seguisbi",
+                      fontSize: isMobile ? null : 12,
+                      maxLength: 500,
                     ),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "500",
-                          style: context.bodySmall,
-                        )),
+                  
                     // CustomButton(
                     //     title: "Create Post",
                     //     loading: loading,
@@ -451,7 +616,7 @@ class _NewPostState extends State<NewPost> {
                             "Change Post Sector..",
                             style: context.titleLarge?.copyWith(
                                 color: Config.drawerColor,
-                                fontFamily: "Seguibl"),
+                                ),
                           ),
                           IconButton(
                               onPressed: () {

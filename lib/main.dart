@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Config.themeColor),
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: false,
-        fontFamily: "Seguibl"
+        fontFamily: "Seguisb"
       ),
       routerConfig: CustomRoutes.router,
     );

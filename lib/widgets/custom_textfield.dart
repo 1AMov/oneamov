@@ -20,6 +20,7 @@ class CustomTextField extends StatefulWidget {
   final bool? obscureText;
   final bool? enabled;
   final int? maxLines;
+  final int? maxLength;
   final Widget? suffix;
   final Widget? suffixIcon;
   final InputBorder? border;
@@ -29,6 +30,7 @@ class CustomTextField extends StatefulWidget {
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
   final FontWeight? fontWeight;
+  final double? fontSize;
 
   const CustomTextField({
     super.key,
@@ -41,6 +43,7 @@ class CustomTextField extends StatefulWidget {
     this.obscureText = false,
     this.enabled = true,
     this.maxLines = 1,
+  this.maxLength,
     this.suffix,
     this.suffixIcon,
     required this.textInputType,
@@ -49,7 +52,8 @@ class CustomTextField extends StatefulWidget {
     // this.onSuffixTap,
     this.onChanged,
     this.validator,
-    this.fontWeight
+    this.fontWeight,
+    this.fontSize,
   });
 
   @override
@@ -91,24 +95,31 @@ class _CustomTextFieldState extends State<CustomTextField> {
           enabled: widget.enabled,
           onChanged: widget.onChanged,
           maxLines: widget.maxLines,
+          maxLength: widget.maxLength,
           decoration: InputDecoration(
               contentPadding: const EdgeInsets.all(13.0),
               isDense: true,
               alignLabelWithHint: true,
               labelText: widget.labelText.isEmpty ? null : widget.labelText,
-              hintStyle: context.bodyLarge?.copyWith(fontFamily: widget.fontFamily, color: Config.drawerColor),
-              
+              hintStyle: context.bodyLarge?.copyWith(
+                  fontFamily: widget.fontFamily, color: Config.drawerColor),
               hintText: widget.hintText,
               prefixIcon:
                   widget.prefixIcon != null ? Icon(widget.prefixIcon!) : null,
               suffixIcon: widget.suffixIcon,
               // suffix: widget.suffix,
-              labelStyle: focusNode.hasFocus?  TextStyle(
-                  color: Config.themeColor) : context.headlineMedium?.copyWith(fontFamily: widget.fontFamily, color: Config.drawerColor, fontSize: 25, fontWeight: widget.fontWeight),
-              border: widget.border ?? OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                borderSide: BorderSide(color: Colors.black, width: 0.5),
-              ),
+              labelStyle: focusNode.hasFocus
+                  ? const TextStyle(color: Config.themeColor)
+                  : context.headlineMedium?.copyWith(
+                      fontFamily: widget.fontFamily,
+                      color: Config.drawerColor,
+                      fontSize: widget.fontSize ?? 25,
+                      fontWeight: widget.fontWeight),
+              border: widget.border ??
+                  const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderSide: BorderSide(color: Colors.black, width: 0.5),
+                  ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 borderSide: BorderSide(color: Config.themeColor, width: 1.0),
